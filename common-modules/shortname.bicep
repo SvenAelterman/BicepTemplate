@@ -9,26 +9,45 @@
 
 param namingConvention string
 param location string
+@allowed([
+  'kv'
+  'st'
+])
 param resourceType string
 param environment string
 param workloadName string
 param sequence int
 param removeHyphens bool = false
 
-// 24 is for Key Vault
-param maxLength int = 24
+// Define the behavior of this module for each supported resource type
+var Defs = {
+  kv: {
+    lowerCase: false
+    maxLength: 24
+    alwaysRemoveHyphens: false
+  }
+  st: {
+    lowerCase: true
+    maxLength: 23
+    alwaysRemoveHyphens: true
+  }
+}
 
-// LATER: Add a comprehensive list, but there appears to be no authoritative source
-// https://github.com/MicrosoftDocs/azure-docs/issues/61803
-// https://github.com/aznamingtool/AzureNamingTool/blob/7a2242d24572ee7204bd1514bd5ed74c870c6722/repository/resourcelocations.json
 var shortLocations = {
   eastus: 'eus'
   eastus2: 'eus2'
 }
 
+var maxLength = Defs[resourceType].maxLength
+var lowerCase = Defs[resourceType].lowerCase
+// Hyphens must be removed for certain resource types (storage accounts)
+// and might be removed based on parameter input for others
+var doRemoveHyphens = (Defs[resourceType].alwaysRemoveHyphens || removeHyphens)
+
 // Translate the regular location value to a shorter value
 var shortLocationValue = shortLocations[location]
-var shortNameAnyLength = replace(replace(replace(replace(replace(namingConvention, '{env}', take(environment, 1)), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{wloadname}', workloadName), '{rtype}', resourceType)
-var shortNameAnyLengthHyphensProcessed = removeHyphens ? replace(shortNameAnyLength, '-', '') : shortNameAnyLength
+var shortNameAnyLength = replace(replace(replace(replace(replace(namingConvention, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{wloadname}', workloadName), '{rtype}', resourceType)
+var shortNameAnyLengthHyphensProcessed = doRemoveHyphens ? replace(shortNameAnyLength, '-', '') : shortNameAnyLength
+var shortNameAnyLengthHyphensProcessedCased = lowerCase ? toLower(shortNameAnyLengthHyphensProcessed) : shortNameAnyLengthHyphensProcessed
 
-output shortName string = take(shortNameAnyLengthHyphensProcessed, maxLength)
+output shortName string = take(shortNameAnyLengthHyphensProcessedCased, maxLength)
