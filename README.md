@@ -16,10 +16,6 @@ This PowerShell script will deploy your main.bicep template.
 
 The modules in this folder are modules that contain re-usable outputs.
 
-#### roles.bicep
-
-Contains role definitions for use when setting RBAC permissions.
-
 ### modules
 
 You should create your own modules folder and reference those modules from main.bicep or other modules.
