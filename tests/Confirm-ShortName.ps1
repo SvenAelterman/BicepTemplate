@@ -63,9 +63,11 @@ $TemplateParameters = @{
 	addRandomChars   = $AddRandomChars
 }
 
+$TemplateFile = '.\common-modules\shortname.bicep'
+
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
-	-TemplateFile ".\common-modules\shortname.bicep" -TemplateParameterObject $TemplateParameters
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
 
 # ASSERT
 [bool]$Success = Confirm-DeploymentResult $DeploymentResult $ExpectedShortName
@@ -78,7 +80,7 @@ $ExpectedShortName = 'stmyworkload????teus21'
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
-	-TemplateFile ".\common-modules\shortname.bicep" -TemplateParameterObject $TemplateParameters
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
 
 # ASSERT
 [bool]$Success = Confirm-DeploymentResult $DeploymentResult $ExpectedShortName
@@ -90,7 +92,7 @@ $ExpectedShortName = "pg-myworkload-test-eastus2-01"
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
-	-TemplateFile ".\common-modules\shortname.bicep" -TemplateParameterObject $TemplateParameters
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
 
 # ASSERT
 $Success = $Success -And (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName)
@@ -103,7 +105,7 @@ $ExpectedShortName = "pg-myreallylongworkloadname-thatwillbeshortenedfor????-t-e
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
-	-TemplateFile ".\common-modules\shortname.bicep" -TemplateParameterObject $TemplateParameters
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
 
 # ASSERT
 $Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And $Success
@@ -116,7 +118,7 @@ $ExpectedShortName = "stresearchhubco??teus21"
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
-	-TemplateFile ".\common-modules\shortname.bicep" -TemplateParameterObject $TemplateParameters
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
 
 # ASSERT
 $Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And $Success
@@ -127,7 +129,7 @@ $ExpectedShortName = "researchhubco??tsteus21"
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
-	-TemplateFile ".\common-modules\shortname.bicep" -TemplateParameterObject $TemplateParameters
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
 
 # ASSERT
 $Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And $Success
