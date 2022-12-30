@@ -33,12 +33,11 @@ resource workloadResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
 }
 
 module roles 'common-modules/roles.bicep' = {
-  name: replace(deploymentNameStructure, '{rtype}', 'roles')
-  scope: workloadResourceGroup
+  name: take(replace(deploymentNameStructure, '{rtype}', 'roles'), 64)
 }
 
 module abbreviations 'common-modules/abbreviations.bicep' = {
-  name: replace(deploymentNameStructure, '{rtype}', 'abbrev')
+  name: take(replace(deploymentNameStructure, '{rtype}', 'abbrev'), 64)
   scope: workloadResourceGroup
 }
 
