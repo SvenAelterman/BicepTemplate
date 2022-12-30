@@ -30,3 +30,7 @@ Sample output
 ## roles.bicep
 
 Pending.
+
+## shortname.bicep
+
+Pending.

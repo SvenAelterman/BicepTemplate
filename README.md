@@ -36,4 +36,4 @@ Here are the common parameters defined by the template main.bicep:
   * **{loc}**: Replaced with the value of the `location` parameter.
   * **{seq}**: Replaced with the string value of the sequence parameter, always formatted as two digits.
 
-These parameters are passed to the deployment from the PowerShell script using the `$Parameters` object, which uses parameter splatting for increased resilience.
+These parameters are passed to the deployment from the PowerShell script using the `$TemplateParameters` PowerShell object, which uses parameter splatting for increased resilience.
