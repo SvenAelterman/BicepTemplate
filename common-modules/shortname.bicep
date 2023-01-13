@@ -10,11 +10,12 @@
 param namingConvention string
 param location string
 @allowed([
-  'kv'
-  'st'
-  'cr'
-  'pg'
-  'ci'
+  'kv' // Key Vault
+  'st' // Storage Account
+  'cr' // Container Registry
+  'pg' // PostgreSQL Flexible Server
+  'ci' // Container Instance
+  'mysql' // MySQL Flexible Server
 ])
 param resourceType string
 param environment string
@@ -53,6 +54,11 @@ var Defs = {
     alwaysRemoveSegmentSeparator: false
   }
   ci: {
+    lowerCase: true
+    maxLength: 63
+    alwaysRemoveSegmentSeparator: false
+  }
+  mysql: {
     lowerCase: true
     maxLength: 63
     alwaysRemoveSegmentSeparator: false
