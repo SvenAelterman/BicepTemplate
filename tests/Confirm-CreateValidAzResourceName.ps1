@@ -1,4 +1,4 @@
-# PowerShell script to deploy the main.bicep template with parameter values
+# PowerShell script to test the createValidAzResourceName Bicep module
 
 #Requires -Modules "Az"
 #Requires -PSEdition Core
@@ -63,7 +63,7 @@ $TemplateParameters = @{
 	addRandomChars   = $AddRandomChars
 }
 
-$TemplateFile = '.\common-modules\shortname.bicep'
+$TemplateFile = '.\common-modules\createValidAzResourceName.bicep'
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
@@ -111,6 +111,18 @@ $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$E
 $Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And $Success
 
 # ARRANGE
+$TemplateParameters.useRemoveVowelStrategy = $true
+$ExpectedShortName = "pg-myrllylngwrkldnm-thtwllbshrtndfrsr????-t-eus2-1"
+
+# ACT
+$DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
+	-TemplateFile $TemplateFile -TemplateParameterObject $TemplateParameters
+
+# ASSERT
+$Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And $Success
+
+# ARRANGE
+$TemplateParameters.useRemoveVowelStrategy = $false
 $TemplateParameters.addRandomChars = 2
 $TemplateParameters.workloadName = 'researchhub-core'
 $TemplateParameters.resourceType = 'st'

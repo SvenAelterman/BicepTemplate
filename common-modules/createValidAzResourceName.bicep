@@ -28,6 +28,9 @@ param requireShorten bool = false
 param removeSegmentSeparator bool = false
 param segmentSeparator string = '-'
 
+@description('If true, when creating a short name, vowels will first be removed from the workload name.')
+param useRemoveVowelStrategy bool = false
+
 param addRandomChars int = 0
 param time string = utcNow()
 
@@ -96,14 +99,25 @@ var regularName = replace(replace(replace(replace(replace(namingConventionSegmen
 var shortName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{wloadname}', randomizedWorkloadName), '{rtype}', resourceType)
 
 // Based on the length of the workload name, the short name could still be too long
-var mustShortenWorkloadName = length(shortName) > maxLength
-var workloadNameCharsToKeep = mustShortenWorkloadName ? length(workloadNameSegmentSeparatorProcessed) - length(shortName) + maxLength : length(workloadName)
-// Create a shortened workload name by removing characters from the end
-var shortWorkloadName = '${take(workloadNameSegmentSeparatorProcessed, workloadNameCharsToKeep)}${randomChars}'
+var mustTryVowelRemoval = length(shortName) > maxLength
+// How many vowels would need to be removed to be effective without further shortening
+var minEffectiveVowelRemovalCount = length(shortName) - maxLength
 
-// Cut characters from the end of the workload name as necessary
+// If allowed, try removing vowels
+var workloadNameVowelsProcessed = mustTryVowelRemoval && useRemoveVowelStrategy ? replace(replace(replace(replace(replace(workloadNameSegmentSeparatorProcessed, 'a', ''), 'e', ''), 'i', ''), 'o', ''), 'u', '') : workloadNameSegmentSeparatorProcessed
+
+var mustShortenWorkloadName = (length(randomizedWorkloadName) - length('${workloadNameVowelsProcessed}${randomChars}')) < minEffectiveVowelRemovalCount
+
+// Determine how many characters must be kept from the workload name
+var workloadNameCharsToKeep = mustShortenWorkloadName ? length(workloadNameVowelsProcessed) - length(shortName) + maxLength : length(workloadName)
+
+// Create a shortened workload name by removing characters from the end
+var shortWorkloadName = '${take(workloadNameVowelsProcessed, workloadNameCharsToKeep)}${randomChars}'
+
+// Recreate a proposed short name for the resource
 var actualShortName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{wloadname}', shortWorkloadName), '{rtype}', resourceType)
 
+// The actual name of the resource depends on whether shortening is required or the length of the regular name exceeds the maximum length allowed for the resource type
 var actualName = (requireShorten || length(regularName) > maxLength) ? actualShortName : regularName
 
 var actualNameCased = lowerCase ? toLower(actualName) : actualName
@@ -115,3 +129,6 @@ output shortName string = take(actualNameCased, maxLength)
 output workloadNameCharsKept int = workloadNameCharsToKeep
 output originalShortNameLength int = length(shortName)
 output actualNameCased string = actualNameCased
+output workloadNameVowelsProcessed string = workloadNameVowelsProcessed
+output triedVowelRemoval bool = mustTryVowelRemoval
+output minEffectiveVowelRemovalCount int = minEffectiveVowelRemovalCount
