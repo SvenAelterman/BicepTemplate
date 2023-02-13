@@ -126,7 +126,7 @@ $TemplateParameters.useRemoveVowelStrategy = $false
 $TemplateParameters.addRandomChars = 2
 $TemplateParameters.workloadName = 'researchhub-core'
 $TemplateParameters.resourceType = 'st'
-$ExpectedShortName = "stresearchhubco??teus21"
+$ExpectedShortName = "stresearchhubcor??teus21"
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
@@ -137,7 +137,7 @@ $Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And 
 
 # ARRANGE
 $TemplateParameters.namingConvention = '{wloadname}-{env}-{rtype}-{loc}-{seq}'
-$ExpectedShortName = "researchhubco??tsteus21"
+$ExpectedShortName = "researchhubcor??tsteus21"
 
 # ACT
 $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$Environment-$(Get-Date -Format 'yyyyMMddThhmmssZ' -AsUTC)" `
