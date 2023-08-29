@@ -97,9 +97,9 @@ var workloadNameSegmentSeparatorProcessed = doRemoveSegmentSeparator ? replace(w
 var randomizedWorkloadName = '${workloadNameSegmentSeparatorProcessed}${randomChars}'
 
 // Use the naming convention to create two names: one shortened, one regular
-var regularName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(environment)), '{loc}', location), '{seq}', sequenceFormatted), '{wloadname}', randomizedWorkloadName), '{rtype}', resourceType)
+var regularName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(environment)), '{loc}', location), '{seq}', sequenceFormatted), '{workloadName}', randomizedWorkloadName), '{rtype}', resourceType)
 // The short name uses one character for the environment, a shorter location name, and the minimum number of digits for the sequence
-var shortName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{wloadname}', randomizedWorkloadName), '{rtype}', resourceType)
+var shortName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{workloadName}', randomizedWorkloadName), '{rtype}', resourceType)
 
 // Based on the length of the workload name, the short name could still be too long
 var mustTryVowelRemoval = length(shortName) > maxLength
@@ -118,7 +118,7 @@ var workloadNameCharsToKeep = mustShortenWorkloadName ? length(workloadNameVowel
 var shortWorkloadName = '${take(workloadNameVowelsProcessed, workloadNameCharsToKeep)}${randomChars}'
 
 // Recreate a proposed short name for the resource
-var actualShortName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{wloadname}', shortWorkloadName), '{rtype}', resourceType)
+var actualShortName = replace(replace(replace(replace(replace(namingConventionSegmentSeparatorProcessed, '{env}', toLower(take(environment, 1))), '{loc}', shortLocationValue), '{seq}', string(sequence)), '{workloadName}', shortWorkloadName), '{rtype}', resourceType)
 
 // The actual name of the resource depends on whether shortening is required or the length of the regular name exceeds the maximum length allowed for the resource type
 var actualName = (requireShorten || length(regularName) > maxLength) ? actualShortName : regularName

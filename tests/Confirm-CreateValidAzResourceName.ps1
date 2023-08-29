@@ -13,7 +13,7 @@ Param(
 	[string]$Environment = 'test',
 	[string]$WorkloadName = 'myworkload',
 	[int]$Sequence = 1,
-	[string]$NamingConvention = "{rtype}-{wloadname}-{env}-{loc}-{seq}",
+	[string]$NamingConvention = "{rtype}-{workloadName}-{env}-{loc}-{seq}",
 	[ValidateSet('cr', 'st', 'ci', 'pg', 'kv')]
 	[string]$ResourceType = 'st',
 	[string]$ExpectedShortName = 'stmyworkloadteus21',
@@ -136,7 +136,7 @@ $DeploymentResult = New-AzDeployment -Location $Location -Name "$WorkloadName-$E
 $Success = (Confirm-DeploymentResult $DeploymentResult $ExpectedShortName) -And $Success
 
 # ARRANGE
-$TemplateParameters.namingConvention = '{wloadname}-{env}-{rtype}-{loc}-{seq}'
+$TemplateParameters.namingConvention = '{workloadName}-{env}-{rtype}-{loc}-{seq}'
 $ExpectedShortName = "researchhubcor??tsteus21"
 
 # ACT
