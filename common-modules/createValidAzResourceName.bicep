@@ -134,3 +134,11 @@ var actualNameCased = lowerCase ? toLower(actualName) : actualName
 
 // This take() function shouldn't actually remove any characters, just here for safety
 output shortName string = take(actualNameCased, maxLength)
+
+// For debugging only
+output workloadNameCharsKept int = workloadNameCharsToKeep
+output originalShortNameLength int = length(shortName)
+output actualNameCased string = actualNameCased
+output workloadNameVowelsProcessed string = workloadNameVowelsProcessed
+output triedVowelRemoval bool = mustTryVowelRemoval
+output minEffectiveVowelRemovalCount int = minEffectiveVowelRemovalCount
