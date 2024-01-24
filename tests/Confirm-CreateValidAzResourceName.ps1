@@ -1,4 +1,7 @@
-# PowerShell script to test the createValidAzResourceName Bicep module
+<#
+.SYNOPSIS
+	PowerShell script to test the createValidAzResourceName Bicep module.
+#>
 
 #Requires -Modules "Az"
 #Requires -PSEdition Core
