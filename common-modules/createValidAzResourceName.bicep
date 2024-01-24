@@ -10,12 +10,19 @@
 param namingConvention string
 param location string
 @allowed([
+  'vnet' // Virtual Network
   'kv' // Key Vault
   'st' // Storage Account
   'cr' // Container Registry
   'pg' // PostgreSQL Flexible Server
   'ci' // Container Instance
   'mysql' // MySQL Flexible Server
+  'app' // Web App
+  'plan' // App Service Plan
+  'appi' // Application Insights
+  'uami' // User-assigned Managed Identity
+  'dplscr' // Deployment Script
+  'log' // Log Analytics Workspace
 ])
 param resourceType string
 param environment string
@@ -27,6 +34,11 @@ param sequence int
 param requireShorten bool = false
 @description('If true, hyphens will be removed from the name. If false, they will only be removed if required by the resource type.')
 param removeSegmentSeparator bool = false
+
+@allowed([
+  '-'
+  '_'
+])
 param segmentSeparator string = '-'
 
 @description('If true, when creating a short name, vowels will first be removed from the workload name.')
@@ -39,6 +51,21 @@ param additionalRandomInitializer string = ''
 
 // Define the behavior of this module for each supported resource type
 var Defs = {
+  vnet: {
+    lowerCase: false
+    maxLength: 64
+    alwaysRemoveSegmentSeparator: false
+  }
+  plan: {
+    lowerCase: false
+    maxLength: 60
+    alwaysRemoveSegmentSeparator: false
+  }
+  app: {
+    lowerCase: false
+    maxLength: 60
+    alwaysRemoveSegmentSeparator: false
+  }
   kv: {
     lowerCase: false
     maxLength: 24
@@ -66,6 +93,26 @@ var Defs = {
   }
   mysql: {
     lowerCase: true
+    maxLength: 63
+    alwaysRemoveSegmentSeparator: false
+  }
+  appi: {
+    lowerCase: false
+    maxLength: 260
+    alwaysRemoveSegmentSeparator: false
+  }
+  uami: {
+    lowerCase: false
+    maxLength: 128
+    alwaysRemoveSegmentSeparator: false
+  }
+  dplscr: {
+    lowerCase: false
+    maxLength: 63 // Guess, not documented
+    alwaysRemoveSegmentSeparator: false
+  }
+  log: {
+    lowerCase: false
     maxLength: 63
     alwaysRemoveSegmentSeparator: false
   }
