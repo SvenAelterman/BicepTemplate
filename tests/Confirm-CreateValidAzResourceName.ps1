@@ -35,7 +35,7 @@ function Confirm-DeploymentResult {
 	if ($DeploymentResult.ProvisioningState -eq 'Succeeded') {
 		Write-Verbose "Deployment success"
 
-		[string]$ShortNameOutput = $DeploymentResult.Outputs.shortName.Value
+		[string]$ShortNameOutput = $DeploymentResult.Outputs.validName.Value
 	
 		if ($ShortNameOutput -Like $ExpectedShortName) {
 			Write-Host "✓ Short name '$ShortNameOutput' matches expected value! 🔥"
