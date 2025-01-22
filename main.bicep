@@ -1,9 +1,5 @@
 targetScope = 'subscription'
 
-@allowed([
-  'eastus2'
-  'eastus'
-])
 param location string
 @allowed([
   'test'
@@ -24,7 +20,11 @@ var sequenceFormatted = format('{0:00}', sequence)
 
 var deploymentNameStructure = '${workloadName}-${environment}-{rtype}-${deploymentTime}'
 // Naming structure only needs the resource type ({rtype}) replaced
-var namingStructure = replace(replace(replace(replace(namingConvention, '{env}', environment), '{loc}', location), '{seq}', sequenceFormatted), '{workloadName}', workloadName)
+var namingStructure = replace(
+  replace(replace(replace(namingConvention, '{env}', environment), '{loc}', location), '{seq}', sequenceFormatted),
+  '{workloadName}',
+  workloadName
+)
 
 resource workloadResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: replace(namingStructure, '{rtype}', 'rg')

@@ -1,6 +1,18 @@
-# PowerShell script to deploy the main.bicep template with parameter values
+<#
+.SYNOPSIS
+Deploy the main.bicep template with parameter values or a parameter file.
 
-#Requires -Modules "Az"
+.DESCRIPTION
+Performs the Bicep deployment specified in the Bicep file using the New-AzDeployment cmdlet.
+
+.EXAMPLE
+.\deploy.ps1 -Location 'eastus2' -Environment 'test' -WorkloadName 'biceptemplate2' -Sequence 1 -NamingConvention '{rtype}-{workloadName}-{env}-{loc}-{seq}'
+
+.EXAMPLE
+.\deploy.ps1 -UseParameterFile -TemplateParameterFile './main.sample.bicepparam' -Verbose -DeleteJsonParameterFileAfterDeployment
+#>
+
+#Requires -Modules "Az.Resources"
 #Requires -PSEdition Core
 
 # Use these parameters to customize the deployment instead of modifying the default parameter values
@@ -26,7 +38,9 @@ Param(
 	[Parameter(ParameterSetName = 'ParamFile')]
 	[switch]$UseParameterFile,
 	[Parameter(ParameterSetName = 'ParamFile', Position = 1)]
-	[string]$TemplateParameterFile = "./main.parameters-sample.jsonc"
+	[string]$TemplateParameterFile = "./main.sample.bicepparam",
+	[Parameter()]
+	[bool]$DeleteJsonParameterFileAfterDeployment = $true
 )
 
 # Define common parameters for the New-AzDeployment cmdlet
@@ -36,10 +50,13 @@ Param(
 }
 
 if ($UseParameterFile) {
-	Write-Verbose "Using template parameter file"
+	Write-Verbose "Using template parameter file '$TemplateParameterFile'."
 	$CmdLetParameters.Add('TemplateParameterFile', $TemplateParameterFile)
+	[string]$TemplateParameterJsonFile = [System.IO.Path]::ChangeExtension($TemplateParameterFile, 'json')
+	bicep build-params $TemplateParameterFile --outfile $TemplateParameterJsonFile
+
 	# Read the values from the parameters file, to use when generating the $DeploymentName value
-	$ParameterFileContents = (Get-Content $TemplateParameterFile | ConvertFrom-Json).parameters
+	$ParameterFileContents = (Get-Content $TemplateParameterJsonFile | ConvertFrom-Json).parameters
 	$WorkloadName = $ParameterFileContents.workloadName.value
 	$Environment = $ParameterFileContents.environment.value
 }
@@ -75,6 +92,13 @@ $DeploymentResult = New-AzDeployment @CmdLetParameters
 # Evaluate the deployment results
 if ($DeploymentResult.ProvisioningState -eq 'Succeeded') {
 	Write-Host "🔥 Deployment succeeded."
+
+	if ($DeleteJsonParameterFileAfterDeployment) {
+		Write-Verbose "Deleting template parameter JSON file '$TemplateParameterJsonFile'."
+		Remove-Item -Path $TemplateParameterJsonFile -Force
+	}
+	
+	$DeploymentResult.Outputs | Format-Table -Property @{Name = 'Output Name'; Expression = { $_.Key } }, @{Name = 'Value'; Expression = { $_.Value.Value } }
 }
 else {
 	$DeploymentResult
